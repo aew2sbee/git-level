@@ -1,0 +1,34 @@
+name: Publish to npm with pnpm
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. pnpmのインストール
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9 # 使用しているpnpmのメジャーバージョンに合わせてください
+
+      # 2. Node.jsのセットアップ
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm' # pnpmのキャッシュを有効化して高速化
+
+      # 3. 依存関係のインストール
+      - run: pnpm install --frozen-lockfile
+
+      # 4. ビルド（TypeScriptのコンパイルなど）
+      - run: pnpm run build
+
+      # 5. npmへ公開（pnpmを使用）
+      - run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
