@@ -38,7 +38,7 @@ describe('renderSvg', () => {
 
     // スナップショットテスト
     expect(svg).toMatchSnapshot();
-    
+
     // 部分的な内容のチェック
     expect(svg).toContain(username);
     expect(svg).toContain('>1</');
