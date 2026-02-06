@@ -1,12 +1,5 @@
 import { JSDOM } from 'jsdom';
-
-// データの型定義
-export interface UserStats {
-  totalBytes: number;
-  level: number;
-  rank: string;
-  nextLevelExp: number;
-}
+import { UserStats } from './types';
 
 // SVGのサイズ
 const WIDTH = 400;
