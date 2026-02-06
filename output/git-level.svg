@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="304" viewBox="0 0 430 304"><defs><style>
+  .bg { fill: #282a36; rx: 16; } /* 角を少し丸くするとモダンになります */
+  .main-color { fill: #f8f8f2; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .username { font-size: 18px; font-weight: 400; opacity: 0.8; }
+  .level-label { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+  .level-value { font-size: 84px; font-weight: 900; }
+
+  /* Rank全体のスタイル定義を微調整 */
+  .rank-container { font-size: 22px; font-weight: 600; }
+  .rank-label-text { font-style: normal; } /* Rank: の部分はイタリックなし */
+  .rank-value-text { font-style: italic; }              /* 称号の部分だけイタリック */
+
+  .stat-sub { font-size: 12px; opacity: 0.7; }
+  .progress-bg { fill: #44475a; rx: 6; }
+  .progress-fill { fill: #f8f8f2; rx: 6; }
+</style></defs><rect width="100%" height="100%" class="bg"></rect><text x="30" y="45" class="main-color username">@aew2sbee</text><text x="215" y="145" class="main-color level-value" text-anchor="middle">5</text><text x="150" y="140" class="main-color level-label" text-anchor="end">Lv.</text><text x="215" y="190" class="main-color rank-container" text-anchor="middle"><tspan class="rank-label-text">Rank: </tspan><tspan class="rank-value-text">Aspiring Developer</tspan></text><rect x="65" y="210" width="300" height="12" class="progress-bg"></rect><rect x="65" y="210" width="236.4557345971564" height="12" class="progress-fill"></rect><text x="215" y="245" class="main-color stat-sub" text-anchor="middle">Next: 51,971 / 65,937.5 Bytes</text></svg>

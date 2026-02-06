@@ -6,16 +6,16 @@ interface TitleThreshold {
 }
 
 const TITLE_THRESHOLDS: TitleThreshold[] = [
-  { threshold: 0, title: 'Hello Worldの住人' },
-  { threshold: 10_000, title: '駆け出しデベロッパー' },
-  { threshold: 50_000, title: '写経の修行者' },
-  { threshold: 100_000, title: '不具合を狩る者' },
-  { threshold: 250_000, title: 'ロジックの構築師' },
-  { threshold: 500_000, title: 'コードの設計士' },
-  { threshold: 1_000_000, title: 'フレームワークの覇者' },
-  { threshold: 2_500_000, title: '伝説のデプロイヤー' },
-  { threshold: 5_000_000, title: 'システムの賢者' },
-  { threshold: 10_000_000, title: 'バイナリの神' },
+  { threshold: 0, title: 'Hello World Habitants' },
+  { threshold: 10_000, title: 'Aspiring Developer' },
+  { threshold: 50_000, title: 'Code Follower' },
+  { threshold: 100_000, title: 'Bug Hunter' },
+  { threshold: 250_000, title: 'Logic Architect' },
+  { threshold: 500_000, title: 'Code Designer' },
+  { threshold: 1_000_000, title: 'Framework Master' },
+  { threshold: 2_500_000, title: 'Legendary Deployer' },
+  { threshold: 5_000_000, title: 'System Sage' },
+  { threshold: 10_000_000, title: 'Binary God' },
 ];
 
 const INIT_LEVEL = 1;

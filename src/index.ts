@@ -27,9 +27,8 @@ async function main() {
   console.log(`Fetching data for GitHub user: ${username}...`);
 
   try {
-    // const repos = await fetchUserReposAndLanguages(username, token);
-    // const stats = analyzeUserStats(repos);
-    const stats = { totalBytes: 51971, level: 5, rank: '写経の修行者', nextLevelExp: 13966.5 };
+    const repos = await fetchUserReposAndLanguages(username, token);
+    const stats = analyzeUserStats(repos);
     console.log(stats);
 
     // テキスト出力を維持
@@ -49,7 +48,7 @@ async function main() {
     }
 
     // SVGファイルに保存
-    const outputPath = path.join(outputDir, 'stats.svg');
+    const outputPath = path.join(outputDir, 'git-level.svg');
     fs.writeFileSync(outputPath, svgContent);
     console.log(`\nSVG stats card saved to: ${outputPath}`);
 
