@@ -2,96 +2,105 @@ import { JSDOM } from 'jsdom';
 import { UserStats } from './types';
 
 // SVGのサイズ
-const WIDTH = 400;
-const HEIGHT = 180;
+const WIDTH = 300;
+const HEIGHT = 180; // テキスト追加に伴い、少し高さを調整
 
 // スタイル定義
 const STYLES = `
-  .bg { fill: url(#bg-gradient); stroke: #44475a; stroke-width: 1.5; }
-  .username { font-size: 16px; font-weight: 600; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #f8f8f2; }
-  .level-label { font-size: 14px; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #bd93f9; }
-  .level-value { font-size: 48px; font-weight: 800; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #f8f8f2; }
-  .rank-label { font-size: 20px; font-weight: 700; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #50fa7b; }
-  .exp-label { font-size: 12px; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #ffb86c; }
-  .total-bytes { font-size: 11px; font-family: 'Segoe UI', Ubuntu, sans-serif; fill: #6272a4; }
+  .bg { fill: #282a36; rx: 15; }
+  .main-color { fill: #f8f8f2; font-family: 'Segoe UI', system-ui, sans-serif; }
+  .username { font-size: 14px; font-weight: 400; opacity: 0.8; }
+  .level-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .level-value { font-size: 56px; font-weight: 900; }
+  .rank-label { font-size: 18px; font-weight: 600; font-style: italic; }
+  .stat-sub { font-size: 11px; opacity: 0.7; }
+  .progress-bg { fill: #44475a; rx: 4; }
+  .progress-fill { fill: #f8f8f2; rx: 4; }
 `;
 
 export function renderSvg(stats: UserStats, username: string): string {
-  // JSDOMで環境を初期化
   const dom = new JSDOM(`<!DOCTYPE html><html><body></body></html>`);
   const document = dom.window.document;
 
-  // SVG要素を作成
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); // XML名前空間を付与
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
   svg.setAttribute('width', `${WIDTH}`);
   svg.setAttribute('height', `${HEIGHT}`);
   svg.setAttribute('viewBox', `0 0 ${WIDTH} ${HEIGHT}`);
 
-  // スタイルとグラデーションの定義
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
   style.textContent = STYLES;
-  
-  const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-  gradient.setAttribute('id', 'bg-gradient');
-  gradient.setAttribute('x1', '0%');
-  gradient.setAttribute('y1', '0%');
-  gradient.setAttribute('x2', '100%');
-  gradient.setAttribute('y2', '100%');
-  gradient.innerHTML = `
-    <stop offset="0%" stop-color="#44475a" />
-    <stop offset="100%" stop-color="#282a36" />
-  `;
-  
   defs.appendChild(style);
-  defs.appendChild(gradient);
   svg.appendChild(defs);
 
-  // 背景の描画
+  // 背景
   const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
   bgRect.setAttribute('width', '100%');
   bgRect.setAttribute('height', '100%');
-  bgRect.setAttribute('rx', '10');
   bgRect.setAttribute('class', 'bg');
   svg.appendChild(bgRect);
 
-  const textGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  // --- 計算ロジック ---
+  const currentVal = stats.totalBytes;
+  const targetVal = stats.totalBytes + stats.nextLevelExp;
+  const progressRatio = Math.min(currentVal / targetVal, 1);
 
-  // 1. Username
-  const usernameText = createTextElement(document, 20, 35, username, 'username');
-  textGroup.appendChild(usernameText);
+  // --- レイアウト ---
+  // 1. ユーザー名 (左上)
+  svg.appendChild(createTextElement(document, 25, 30, `@${username}`, 'main-color username'));
 
-  // 2. "Level" ラベル
-  const levelLabel = createTextElement(document, WIDTH / 2, 65, 'Level', 'level-label');
-  levelLabel.setAttribute('text-anchor', 'middle');
-  textGroup.appendChild(levelLabel);
-
-  // 3. レベル数値
-  const levelValue = createTextElement(document, WIDTH / 2, 110, `${stats.level}`, 'level-value');
+  // 2. レベル数値 (中央)
+  const levelValue = createTextElement(document, WIDTH / 2, 85, `${stats.level}`, 'main-color level-value');
   levelValue.setAttribute('text-anchor', 'middle');
-  textGroup.appendChild(levelValue);
+  svg.appendChild(levelValue);
 
-  // 4. Rank (称号)
-  const rankText = createTextElement(document, WIDTH / 2, 145, stats.rank, 'rank-label');
+  // 3. "LV" ラベル (数値の左横)
+  const lvLabel = createTextElement(document, WIDTH / 2 - 45, 85, 'LV', 'main-color level-label');
+  lvLabel.setAttribute('text-anchor', 'end');
+  svg.appendChild(lvLabel);
+
+  // 4. Rank (数値の下)
+  const rankText = createTextElement(document, WIDTH / 2, 115, stats.rank, 'main-color rank-label');
   rankText.setAttribute('text-anchor', 'middle');
-  textGroup.appendChild(rankText);
+  svg.appendChild(rankText);
 
-  // 5. 総バイト数 (左下)
-  const totalBytes = createTextElement(document, 20, HEIGHT - 15, `Total: ${stats.totalBytes.toLocaleString()} Bytes`, 'total-bytes');
-  textGroup.appendChild(totalBytes);
+  // 5. プログレスバー
+  const barMaxWidth = 240;
+  const barX = (WIDTH - barMaxWidth) / 2;
+  const barY = 135;
 
-  // 6. 次のレベルまでの経験値 (右下)
-  const expLabel = createTextElement(document, WIDTH - 20, HEIGHT - 15, `Next Level in ${stats.nextLevelExp.toLocaleString()} Bytes`, 'exp-label');
-  expLabel.setAttribute('text-anchor', 'end');
-  textGroup.appendChild(expLabel);
+  const progressBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  progressBg.setAttribute('x', `${barX}`);
+  progressBg.setAttribute('y', `${barY}`);
+  progressBg.setAttribute('width', `${barMaxWidth}`);
+  progressBg.setAttribute('height', '8');
+  progressBg.setAttribute('class', 'progress-bg');
+  svg.appendChild(progressBg);
 
-  svg.appendChild(textGroup);
+  const progressFill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  progressFill.setAttribute('x', `${barX}`);
+  progressFill.setAttribute('y', `${barY}`);
+  progressFill.setAttribute('width', `${barMaxWidth * progressRatio}`);
+  progressFill.setAttribute('height', '8');
+  progressFill.setAttribute('class', 'progress-fill');
+  svg.appendChild(progressFill);
+
+  // 6. プログレスバー下部のテキスト (Next: 現在値/目標値)
+  const progressText = `Next: ${currentVal.toLocaleString()} / ${targetVal.toLocaleString()} Bytes`;
+  const progressLabel = createTextElement(
+    document,
+    WIDTH / 2,
+    barY + 22,
+    progressText,
+    'main-color stat-sub'
+  );
+  progressLabel.setAttribute('text-anchor', 'middle');
+  svg.appendChild(progressLabel);
 
   return svg.outerHTML;
 }
 
-// ヘルパー関数: テキスト要素作成を簡略化
 function createTextElement(doc: Document, x: number, y: number, content: string, className: string) {
   const text = doc.createElementNS('http://www.w3.org/2000/svg', 'text');
   text.setAttribute('x', `${x}`);
